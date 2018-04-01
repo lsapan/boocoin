@@ -9,6 +9,7 @@ class Block(models.Model):
         related_name='children',
         on_delete=models.CASCADE
     )
+    depth = models.IntegerField()
     miner = models.CharField(max_length=64)
     balances = models.TextField()
     extra_data = models.BinaryField(null=True)
