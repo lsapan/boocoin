@@ -6,5 +6,7 @@ services:
     image: lsapan/boocoin
     ports:
       - 9811:9811
+    environment:
+      - DJANGO_SETTINGS_MODULE=local_settings
     volumes:
       - .:/home/docker/code

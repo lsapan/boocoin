@@ -10,7 +10,7 @@ class Block(models.Model):
         on_delete=models.CASCADE
     )
     depth = models.IntegerField()
-    miner = models.CharField(max_length=64)
+    miner = models.CharField(max_length=96)
     balances = models.TextField()
     extra_data = models.BinaryField(null=True)
     time = models.DateTimeField()
@@ -25,11 +25,11 @@ class Transaction(models.Model):
         on_delete=models.CASCADE
     )
     from_account = models.CharField(
-        max_length=64,
+        max_length=96,
         db_index=True,
         null=True
     )
-    to_account = models.CharField(max_length=64, db_index=True)
+    to_account = models.CharField(max_length=96, db_index=True)
     coins = models.DecimalField(max_digits=20, decimal_places=8)
     extra_data = models.BinaryField(null=True)
     time = models.DateTimeField()

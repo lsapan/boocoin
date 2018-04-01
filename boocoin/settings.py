@@ -94,3 +94,20 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     )
 }
+
+
+# Network Nodes
+
+NODES = []
+
+
+# Miner Public Keys
+
+MINER_PUBLIC_KEYS = []
+
+
+# Miner Configuration
+
+MINER_PRIVATE_KEY = ''
+
+WALLET_PRIVATE_KEY = ''
