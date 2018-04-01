@@ -1,4 +1,14 @@
-from django.db import models
+import simplejson as json
+from binascii import hexlify
+from collections import OrderedDict
+from decimal import Decimal
+
+from django.conf import settings
+from django.db import models, transaction as db_transaction
+from django.utils.timezone import now
+
+from boocoin.hashing import create_hash, calculate_merkle_root
+from boocoin.signing import sign
 
 
 class Block(models.Model):
@@ -16,6 +26,47 @@ class Block(models.Model):
     extra_data = models.BinaryField(null=True)
     time = models.DateTimeField()
     signature = models.CharField(max_length=96)
+
+    def get_balances(self):
+        balances = json.loads(self.balances, object_pairs_hook=OrderedDict)
+        for a, b in balances.items():
+            balances[a] = Decimal(b)
+        return balances
+
+    def set_balances(self, balances):
+        self.balances = json.dumps(balances)
+
+    def calculate_hash(self):
+        extra_data = None
+        if self.extra_data:
+            extra_data = hexlify(self.extra_data).decode('utf-8')
+
+        data = json.dumps(OrderedDict([
+            ('previous_block', self.previous_block),
+            ('depth', self.depth),
+            ('miner', self.miner),
+            ('balances', self.balances),
+            ('merkle_root', self.merkle_root),
+            ('extra_data', extra_data),
+            ('time', self.time),
+        ]), default=str)
+        return create_hash(data)
+
+    def set_hash(self):
+        self.id = self.calculate_hash()
+
+    def set_merkle_root(self, transactions):
+        self.merkle_root = calculate_merkle_root(t.id for t in transactions)
+
+    def sign(self):
+        self.signature = sign(self.id)
+
+    def save(self, transactions):
+        with db_transaction.atomic():
+            super().save()
+            for t in transactions:
+                t.block = self
+                t.save()
 
 
 class Transaction(models.Model):
@@ -35,3 +86,30 @@ class Transaction(models.Model):
     extra_data = models.BinaryField(null=True)
     time = models.DateTimeField()
     signature = models.CharField(max_length=96)
+
+    def calculate_hash(self):
+        extra_data = None
+        if self.extra_data:
+            extra_data = hexlify(self.extra_data).decode('utf-8')
+
+        data = json.dumps(OrderedDict([
+            ('from_account', self.from_account),
+            ('to_account', self.to_account),
+            ('coins', self.coins),
+            ('extra_data', extra_data),
+            ('time', self.time),
+        ]), default=str)
+        return create_hash(data)
+
+    def set_hash(self):
+        self.id = self.calculate_hash()
+
+    @classmethod
+    def create_block_reward(cls):
+        return cls(
+            from_account=None,
+            to_account=settings.WALLET_PUBLIC_KEY,
+            coins=100,
+            time=now(),
+            signature='boocoin-block-reward',
+        )

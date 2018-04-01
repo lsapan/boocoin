@@ -101,13 +101,10 @@ REST_FRAMEWORK = {
 NODES = []
 
 
-# Miner Public Keys
-
-MINER_PUBLIC_KEYS = []
-
-
 # Miner Configuration
+
+MINER_PUBLIC_KEY = ''
 
 MINER_PRIVATE_KEY = ''
 
-WALLET_PRIVATE_KEY = ''
+WALLET_PUBLIC_KEY = ''

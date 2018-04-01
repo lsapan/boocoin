@@ -20,18 +20,12 @@ NODES = [
 ]
 
 
-# Miner Public Keys
-
-MINER_PUBLIC_KEYS = [
-    # 'abcdef...',
-    # 'a1b2c3...',
-]
-
-
 # Miner Configuration
-# Your miner and wallet private key can be the same, but they don't have to be.
-# The wallet private key will receive the 100 coin block reward.
+# Your miner and wallet keys can be the same, but they don't have to be.
+# The wallet public key will receive the 100 coin block reward.
+
+MINER_PUBLIC_KEY = ''
 
 MINER_PRIVATE_KEY = ''
 
-WALLET_PRIVATE_KEY = ''
+WALLET_PUBLIC_KEY = ''
