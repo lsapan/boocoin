@@ -25,13 +25,15 @@ ALLOWED_HOSTS = ['*']
 
 SECRET_KEY = '5xsn6uf@o=ykj_z4xco+xaor4ir*5t58ldd31k&$(umxj_1e_w'
 
-NODE_PORT = 9811
+DEFAULT_NODE_PORT = 9811
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
+
+    'boocoin',
 ]
 
 MIDDLEWARE = [
