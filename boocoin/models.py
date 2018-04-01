@@ -12,6 +12,7 @@ class Block(models.Model):
     depth = models.IntegerField()
     miner = models.CharField(max_length=96)
     balances = models.TextField()
+    merkle_root = models.CharField(max_length=64)
     extra_data = models.BinaryField(null=True)
     time = models.DateTimeField()
     signature = models.CharField(max_length=96)
