@@ -16,7 +16,7 @@ class TransactionForm(serializers.Serializer):
     private_key = serializers.CharField(max_length=48)
     to_account = serializers.CharField(max_length=96)
     coins = serializers.DecimalField(max_digits=20, decimal_places=8)
-    # extra_data = serializers...
+    extra_data = serializers.FileField(required=False)
 
     def validate_private_key(self, key):
         try:
@@ -36,6 +36,9 @@ class TransactionForm(serializers.Serializer):
             raise serializers.ValidationError('Must be a positive number.')
         return coins
 
+    def validate_extra_data(self, data):
+        return data.read()
+
     def validate(self, data):
         # Build the transaction
         from_account = key_to_hex(data['private_key'].get_verifying_key())
@@ -44,6 +47,7 @@ class TransactionForm(serializers.Serializer):
             to_account=data['to_account'],
             coins=data['coins'],
             time=now(),
+            extra_data=data.get('extra_data'),
         )
         transaction.id = transaction.calculate_hash()
         transaction.signature = sign(transaction.id, sk=data['private_key'])
