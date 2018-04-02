@@ -22,8 +22,8 @@ def prune_invalid_transactions(previous_block, transactions):
     # Start with the current balancess
     balances = previous_block.get_balances()
 
-    for idx, transaction in enumerate(transactions):
-        if not validate_transaction(balances, transaction, idx == 0):
+    for transaction in transactions:
+        if not validate_transaction(balances, transaction, False):
             # Invalid transaction, delete it and move on
             logger.debug(f'Transaction {transaction.id} invalid, pruning...')
             transaction.delete()

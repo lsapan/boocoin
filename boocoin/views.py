@@ -1,17 +1,12 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import status, views
+from rest_framework import status
 from rest_framework.response import Response
 
+from boocoin import forms
 from boocoin.models import Block, Transaction
 from boocoin.serializers import BlockSerializer, TransactionSerializer
-
-
-class APIView(views.APIView):
-    """
-    Prevents DRF from trying to access the (nonexistent) user.
-    """
-    def perform_authentication(self, request):
-        pass
+from boocoin.util.forms import FormView
+from boocoin.util.views import APIView
 
 
 class BlockCountView(APIView):
@@ -29,3 +24,7 @@ class TransactionView(APIView):
     def get(self, request, id):
         transaction = get_object_or_404(Transaction, id=id)
         return Response(TransactionSerializer(transaction).data)
+
+
+class SubmitTransactionView(FormView):
+    serializer_class = forms.TransactionForm

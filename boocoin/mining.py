@@ -27,7 +27,7 @@ def mine_block():
         logger.debug(f'{len(transactions)} transactions after pruning.')
 
         # Convert the unconfirmed transactions and add the block reward
-        transactions = [u.to_transaction() for u in unconfirmed]
+        transactions = [u.to_transaction() for u in transactions]
         transactions.insert(0, Transaction.create_block_reward())
 
         # Set up the block
@@ -50,6 +50,7 @@ def mine_block():
         if validate_block(block, transactions):
             # Save the block
             block.save(transactions)
+            UnconfirmedTransaction.objects.all().delete()
             logger.info(f'Block {block.id} successfully mined.')
         else:
-            logger.critical('Failed to mine block - validation error!')
+            logger.info('Failed to mine block - validation error!')
