@@ -29,3 +29,9 @@ MINER_PUBLIC_KEY = ''
 MINER_PRIVATE_KEY = ''
 
 WALLET_PUBLIC_KEY = ''
+
+
+# Extra Block Data
+# This data will be included with every blocked mined by this miner.
+
+BLOCK_EXTRA_DATA = b''

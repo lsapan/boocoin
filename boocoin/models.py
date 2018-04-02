@@ -27,6 +27,17 @@ class Block(models.Model):
     time = models.DateTimeField()
     signature = models.CharField(max_length=96)
 
+    @classmethod
+    def get_genesis_block(cls):
+        return cls.objects.get(depth=0)
+
+    @classmethod
+    def get_active_block(cls):
+        """
+        Returns the latest block in the longest chain.
+        """
+        return cls.objects.order_by('-depth', 'id')[:1][0]
+
     def get_balances(self):
         balances = json.loads(self.balances, object_pairs_hook=OrderedDict)
         for a, b in balances.items():
@@ -69,24 +80,7 @@ class Block(models.Model):
                 t.save()
 
 
-class Transaction(models.Model):
-    id = models.CharField(max_length=64, primary_key=True)
-    block = models.ForeignKey(
-        Block,
-        related_name='transactions',
-        on_delete=models.CASCADE
-    )
-    from_account = models.CharField(
-        max_length=96,
-        db_index=True,
-        null=True
-    )
-    to_account = models.CharField(max_length=96, db_index=True)
-    coins = models.DecimalField(max_digits=20, decimal_places=8)
-    extra_data = models.BinaryField(null=True)
-    time = models.DateTimeField()
-    signature = models.CharField(max_length=96)
-
+class TransactionHashMixin:
     def calculate_hash(self):
         extra_data = None
         if self.extra_data:
@@ -101,15 +95,53 @@ class Transaction(models.Model):
         ]), default=str)
         return create_hash(data)
 
+
+class Transaction(TransactionHashMixin, models.Model):
+    id = models.CharField(max_length=64, primary_key=True)
+    block = models.ForeignKey(
+        Block,
+        related_name='transactions',
+        on_delete=models.CASCADE
+    )
+    from_account = models.CharField(max_length=96, db_index=True, null=True)
+    to_account = models.CharField(max_length=96, db_index=True)
+    coins = models.DecimalField(max_digits=20, decimal_places=8)
+    extra_data = models.BinaryField(null=True)
+    time = models.DateTimeField()
+    signature = models.CharField(max_length=96)
+
     def set_hash(self):
         self.id = self.calculate_hash()
 
     @classmethod
     def create_block_reward(cls):
-        return cls(
+        reward = cls(
             from_account=None,
             to_account=settings.WALLET_PUBLIC_KEY,
             coins=100,
             time=now(),
             signature='boocoin-block-reward',
+        )
+        reward.set_hash()
+        return reward
+
+
+class UnconfirmedTransaction(TransactionHashMixin, models.Model):
+    id = models.CharField(max_length=64, primary_key=True)
+    from_account = models.CharField(max_length=96, db_index=True, null=True)
+    to_account = models.CharField(max_length=96, db_index=True)
+    coins = models.DecimalField(max_digits=20, decimal_places=8)
+    extra_data = models.BinaryField(null=True)
+    time = models.DateTimeField()
+    signature = models.CharField(max_length=96)
+
+    def to_transaction(self):
+        return Transaction(
+            id=self.id,
+            from_account=self.from_account,
+            to_account=self.to_account,
+            coins=self.coins,
+            extra_data=self.extra_data,
+            time=self.time,
+            signature=self.signature,
         )

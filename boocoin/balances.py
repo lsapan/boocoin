@@ -6,14 +6,17 @@ class InsufficientFunds(ValueError):
 
 
 def apply_transaction_to_balances(transaction, balances):
+    # Prevent modifying the passed balances object
+    balances = balances.copy()
+
     # Ensure the user has the coins that they're transferring
     if transaction.from_account:
-        from_balance = balances[transaction.from_account]
+        from_balance = balances.get(transaction.from_account, Decimal(0))
         if from_balance < transaction.coins:
             raise InsufficientFunds(f'{from_balance} < {transaction.coins}')
 
         # Remove the coins from the sender
-        balances[transaction.from_account] -= transaction.coins
+        balances[transaction.from_account] = from_balance - transaction.coins
 
     # Add the coins to the destination account
     existing_balance = balances.get(transaction.to_account, Decimal(0))

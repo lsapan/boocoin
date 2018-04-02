@@ -31,7 +31,6 @@ class Command(BaseCommand):
 
         # Set up the first transaction
         transaction = Transaction.create_block_reward()
-        transaction.set_hash()
         transactions = [transaction]
 
         # Set up the genesis block

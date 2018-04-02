@@ -10,5 +10,5 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Container configuration
-CMD ["./manage.py", "runserver", "0.0.0.0:9811"]
+CMD ["./manage.py", "runserver", "0.0.0.0:9811", "--noreload"]
 EXPOSE 9811

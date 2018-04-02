@@ -33,7 +33,7 @@ DEFAULT_NODE_PORT = 9811
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
 
-    'boocoin',
+    'boocoin.apps.BoocoinConfig',
 ]
 
 MIDDLEWARE = [
@@ -108,3 +108,5 @@ MINER_PUBLIC_KEY = ''
 MINER_PRIVATE_KEY = ''
 
 WALLET_PUBLIC_KEY = ''
+
+BLOCK_EXTRA_DATA = b''
