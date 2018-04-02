@@ -50,6 +50,6 @@ def mine_block():
         if validate_block(block, transactions):
             # Save the block
             block.save(transactions)
-            logger.debug('Block successfully mined.')
+            logger.info(f'Block {block.id} successfully mined.')
         else:
             logger.critical('Failed to mine block - validation error!')
