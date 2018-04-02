@@ -6,7 +6,7 @@ from django.db import transaction as db_transaction
 from django.conf import settings
 
 from boocoin.mining import mine_block, is_time_to_mine
-from boocoin.models import Block, SyncLock, Transaction
+from boocoin.models import Block, SyncLock, Transaction, UnconfirmedTransaction
 from boocoin.serializers import (
     BlockSerializer, RemoteBlockTransactionSerializer,
     UnconfirmedTransactionSerializer
@@ -139,6 +139,11 @@ def _sync_blocks(node, blocks):
             # Validate the block and transactions
             if validate_block(block_obj, transactions):
                 block_obj.save(transactions)
+
+                # Delete any matching unconfirmed transactions
+                UnconfirmedTransaction.objects.filter(
+                    hash__in=(t.hash for t in transactions)
+                ).delete()
             else:
                 raise ValueError('Block failed validation.')
 

@@ -77,6 +77,12 @@ class TransmitBlockView(APIView):
         # Validate the block and transactions
         if validate_block(block_obj, transactions):
             block_obj.save(transactions)
+
+            # Delete any matching unconfirmed transactions
+            UnconfirmedTransaction.objects.filter(
+                hash__in=(t.hash for t in transactions)
+            ).delete()
+
             return Response()
         else:
             logger.debug(f'Rejecting block from {node}')
