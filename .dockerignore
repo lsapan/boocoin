@@ -44,7 +44,7 @@ coverage.xml
 # Django stuff
 *.log
 local_settings*.py
-local_settings.example.py
+!local_settings.template.py
 
 # Editors
 .vscode
