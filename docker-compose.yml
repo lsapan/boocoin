@@ -7,28 +7,29 @@ services:
     ports:
       - 9811:9811
     environment:
-      - DJANGO_SETTINGS_MODULE=local_settings
+      - DJANGO_SETTINGS_MODULE=local_settings1
+      - DB_NAME=db1.sqlite3
     volumes:
       - .:/home/docker/code
-
+  
   miner2:
+    build: .
     image: lsapan/boocoin
     ports:
       - 9812:9811
     environment:
       - DJANGO_SETTINGS_MODULE=local_settings2
+      - DB_NAME=db2.sqlite3
     volumes:
-      - ./local_settings2.py:/home/docker/code/local_settings2.py
-      - ./db2.sqlite3:/home/docker/code/db.sqlite3
-      - ./genesis.json:/home/docker/code/genesis.json
+      - .:/home/docker/code
   
   miner3:
+    build: .
     image: lsapan/boocoin
     ports:
       - 9813:9811
     environment:
-      - DJANGO_SETTINGS_MODULE=local_settings
+      - DJANGO_SETTINGS_MODULE=local_settings3
+      - DB_NAME=db3.sqlite3
     volumes:
-      - ./local_settings3.py:/home/docker/code/local_settings.py
-      - ./db3.sqlite3:/home/docker/code/db.sqlite3
-      - ./genesis.json:/home/docker/code/genesis.json
+      - .:/home/docker/code
