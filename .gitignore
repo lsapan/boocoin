@@ -39,13 +39,13 @@ coverage.xml
 
 # Django stuff
 *.log
-local_settings.py
+local_settings*.py
 
 # Editors
 .vscode
 
 # Database
-db.sqlite3
+db*.sqlite3
 
 # Boocoin
 genesis.json

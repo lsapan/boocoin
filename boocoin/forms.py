@@ -5,6 +5,7 @@ from rest_framework import serializers
 
 from boocoin.mining import mine_block
 from boocoin.models import Block, UnconfirmedTransaction
+from boocoin.p2p import broadcast_transaction
 from boocoin.serializers import TransactionSerializer
 from boocoin.signing import SigningKey, VerifyingKey, key_to_hex, unhex, sign
 from boocoin.validation import validate_transaction
@@ -68,6 +69,9 @@ class TransactionForm(serializers.Serializer):
         if UnconfirmedTransaction.objects.count() >= 10:
             logger.info('At least 10 transactions waiting, mining new block.')
             mine_block()
+        else:
+            # Notify other nodes about the transaction
+            broadcast_transaction(self.transaction)
 
     def to_representation(self, instance):
         self.transaction.block = None

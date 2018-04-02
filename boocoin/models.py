@@ -128,7 +128,7 @@ class Transaction(TransactionHashMixin, models.Model):
 
 class UnconfirmedTransaction(TransactionHashMixin, models.Model):
     id = models.CharField(max_length=64, primary_key=True)
-    from_account = models.CharField(max_length=96, db_index=True, null=True)
+    from_account = models.CharField(max_length=96, db_index=True)
     to_account = models.CharField(max_length=96, db_index=True)
     coins = models.DecimalField(max_digits=20, decimal_places=8)
     extra_data = models.BinaryField(null=True)

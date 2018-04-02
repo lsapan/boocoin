@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from boocoin.models import Block, Transaction
+from boocoin.models import Block, Transaction, UnconfirmedTransaction
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -9,6 +9,15 @@ class TransactionSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'block', 'from_account', 'to_account', 'coins', 'extra_data',
             'time', 'signature'
+        )
+
+
+class UnconfirmedTransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UnconfirmedTransaction
+        fields = (
+            'id', 'from_account', 'to_account', 'coins', 'extra_data', 'time',
+            'signature'
         )
 
 
