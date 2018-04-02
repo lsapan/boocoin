@@ -1,5 +1,7 @@
 import json
 
+from django.utils.timezone import now
+
 from boocoin.balances import apply_transaction_to_balances, InsufficientFunds
 from boocoin.hashing import calculate_merkle_root
 from boocoin.models import Block
@@ -32,6 +34,10 @@ def prune_invalid_transactions(previous_block, transactions):
 def validate_transaction(balances, transaction, first_in_block=False):
     # Verify the transaction hash
     if transaction.id != transaction.calculate_hash():
+        return False
+
+    # Ensure the transaction isn't in the future
+    if transaction.time > now():
         return False
 
     # Check for a to_account
@@ -88,6 +94,15 @@ def validate_block(block, transactions):
 
     # Verify the depth of the block
     if block.depth != previous_block.depth + 1:
+        return False
+
+    # Ensure the block isn't in the future
+    if block.time > now():
+        return False
+
+    # Verify the block has 11 transactions (10 + 1) or it has been 10 minutes
+    minutes_passed = (block.time - previous_block.time).total_seconds() / 60
+    if len(transactions) < 11 and minutes_passed < 10:
         return False
 
     # A miner must be set
