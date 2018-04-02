@@ -9,6 +9,7 @@ from django.utils.timezone import now
 
 from boocoin.hashing import create_hash, calculate_merkle_root
 from boocoin.signing import sign
+from boocoin.util.db import query_value
 
 
 class Block(models.Model):
@@ -78,6 +79,33 @@ class Block(models.Model):
             for t in transactions:
                 t.block = self
                 t.save()
+
+    def has_transaction_in_chain(self, tx_hash):
+        """
+        Returns whether or not the provided transaction exists anywhere
+        upstream in the chain (including this block).
+        """
+        return bool(query_value("""
+            WITH RECURSIVE
+            txsearch(block_id, parent_id, has_tx) AS (
+                SELECT b.id, b.previous_block_id, t.hash
+                    FROM boocoin_block b
+                    LEFT JOIN boocoin_transaction t
+                        ON t.block_id = b.id AND t.hash = %s
+                    WHERE b.id = %s
+                UNION ALL
+                SELECT b.id, b.previous_block_id, t.hash
+                    FROM boocoin_block b
+                    INNER JOIN txsearch p ON p.parent_id = b.id
+                    LEFT JOIN boocoin_transaction t
+                        ON t.block_id = b.id AND t.hash = %s
+                    WHERE b.id IS NOT NULL
+                    LIMIT 100
+            )
+            SELECT CASE WHEN COUNT(*) THEN 1 ELSE 0 END AS tx_found
+            FROM txsearch
+            WHERE has_tx IS NOT NULL;
+        """, tx_hash, self.id, tx_hash))
 
 
 class TransactionHashMixin:

@@ -56,7 +56,11 @@ class TransactionForm(serializers.Serializer):
 
         # Validate the transaction
         active_block = Block.get_active_block()
-        if not validate_transaction(active_block.get_balances(), transaction):
+        if not validate_transaction(
+            active_block.get_balances(),
+            transaction,
+            prev_block=active_block,
+        ):
             raise serializers.ValidationError('Transaction was not accepted.')
 
         return data

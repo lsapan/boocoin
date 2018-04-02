@@ -23,7 +23,12 @@ def prune_invalid_transactions(previous_block, transactions):
     balances = previous_block.get_balances()
 
     for transaction in transactions:
-        if not validate_transaction(balances, transaction, False):
+        if not validate_transaction(
+            balances,
+            transaction,
+            prev_block=previous_block,
+            first_in_block=False
+        ):
             # Invalid transaction, delete it and move on
             logger.debug(f'Transaction {transaction.hash} invalid, pruning...')
             transaction.delete()
@@ -46,7 +51,8 @@ def binvalid(reason):
     return False
 
 
-def validate_transaction(balances, transaction, first_in_block=False):
+def validate_transaction(balances, transaction, prev_block,
+                         first_in_block=False):
     logger.debug(f'Validating transaction {transaction.hash}')
 
     # Verify the transaction hash
@@ -98,6 +104,11 @@ def validate_transaction(balances, transaction, first_in_block=False):
         balances = apply_transaction_to_balances(transaction, balances)
     except InsufficientFunds:
         return tinvalid('Insufficient funds')
+
+    # Ensure the transaction hasn't already been included in this chain
+    # This prevents replay attacks
+    if prev_block.has_transaction_in_chain(transaction.hash):
+        return tinvalid('Already exists in chain, rejecting replay attack')
 
     logger.debug('Transaction validated')
     return True
@@ -156,7 +167,12 @@ def validate_block(block, transactions):
     # Verify balances
     balances = previous_block.get_balances()
     for idx, transaction in enumerate(transactions):
-        if not validate_transaction(balances, transaction, idx == 0):
+        if not validate_transaction(
+            balances,
+            transaction,
+            prev_block=previous_block,
+            first_in_block=(idx == 0)
+        ):
             return binvalid('Invalid transaction detected')
 
     # All checks passed, the block is valid
