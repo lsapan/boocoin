@@ -64,6 +64,8 @@ def mine_block():
             # Save the block
             block.save(transactions)
             UnconfirmedTransaction.objects.all().delete()
+            from boocoin.p2p import broadcast_block
+            broadcast_block(block)
             logger.info(f'Block {block.id} successfully mined.')
         else:
             logger.info('Failed to mine block - validation error!')

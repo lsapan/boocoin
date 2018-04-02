@@ -121,6 +121,8 @@ NODES = []
 
 # Miner Configuration
 
+MINER_IP = ''
+
 MINER_PUBLIC_KEY = ''
 
 MINER_PRIVATE_KEY = ''

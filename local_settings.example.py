@@ -24,6 +24,8 @@ NODES = [
 # Your miner and wallet keys can be the same, but they don't have to be.
 # The wallet public key will receive the 100 coin block reward.
 
+MINER_IP = ''
+
 MINER_PUBLIC_KEY = ''
 
 MINER_PRIVATE_KEY = ''

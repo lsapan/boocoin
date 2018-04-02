@@ -16,14 +16,14 @@ from boocoin.validation import validate_block
 logger = logging.getLogger(__name__)
 
 
-def get_nodes():
-    nodes = []
-    for node in settings.NODES:
-        if ':' not in node:
-            node = f'{node}:9811'
+def normalize_node(node):
+    if ':' not in node:
+        node = f'{node}:9811'
+    return f'http://{node}'
 
-        nodes.append(f'http://{node}')
-    return nodes
+
+def get_nodes():
+    return [normalize_node(n) for n in settings.NODES]
 
 
 def broadcast_transaction(transaction):
@@ -31,6 +31,19 @@ def broadcast_transaction(transaction):
     for node in get_nodes():
         try:
             requests.post(f'{node}/p2p/transmit_transaction/', data, timeout=5)
+        except Exception as e:
+            logger.warn(str(e))
+            continue
+
+
+def broadcast_block(block):
+    data = {
+        'block': BlockSerializer(block).data,
+        'node': settings.MINER_IP,
+    }
+    for node in get_nodes():
+        try:
+            requests.post(f'{node}/p2p/transmit_block/', json=data, timeout=5)
         except Exception as e:
             logger.warn(str(e))
             continue

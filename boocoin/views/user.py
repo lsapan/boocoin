@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.response import Response
 
 from boocoin import forms
@@ -21,8 +21,11 @@ class BlockView(APIView):
 
 class TransactionView(APIView):
     def get(self, request, id):
-        transaction = get_object_or_404(Transaction, id=id)
-        return Response(TransactionSerializer(transaction).data)
+        transaction = get_list_or_404(Transaction, id=id)
+        if len(transaction) == 1:
+            return Response(TransactionSerializer(transaction[0]).data)
+        else:
+            return Response(TransactionSerializer(transaction).data, many=True)
 
 
 class SubmitTransactionView(FormView):
