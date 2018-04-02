@@ -11,4 +11,6 @@ urlpatterns = [
 
     # "Peer-to-peer" APIs
     path('p2p/transmit_transaction/', views.TransmitTransactionView.as_view()),
+    path('p2p/blockchain_history/', views.BlockchainHistoryView.as_view()),
+    path('p2p/blocks/', views.BlocksView.as_view()),
 ]
