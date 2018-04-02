@@ -21,8 +21,17 @@ class UnconfirmedTransactionSerializer(serializers.ModelSerializer):
         )
 
 
+class RemoteBlockTransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = (
+            'id', 'from_account', 'to_account', 'coins', 'extra_data', 'time',
+            'signature',
+        )
+
+
 class BlockSerializer(serializers.ModelSerializer):
-    transactions = TransactionSerializer(many=True)
+    transactions = TransactionSerializer(many=True, read_only=True)
 
     def get_balances(self, instance):
         return instance.get_balances()

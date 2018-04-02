@@ -28,6 +28,7 @@ def check_for_block():
 
     # Calculate how many minutes it has been since that block
     minutes_passed = (now() - active_block.time).total_seconds() / 60
+    logger.debug(f'Minutes passed since last block: {minutes_passed}')
 
     # Mine a new block if it has been 10 minutes
     if minutes_passed >= 10:

@@ -53,7 +53,7 @@ class Block(models.Model):
             extra_data = hexlify(self.extra_data).decode('utf-8')
 
         data = json.dumps(OrderedDict([
-            ('previous_block', self.previous_block),
+            ('previous_block', self.previous_block_id),
             ('depth', self.depth),
             ('miner', self.miner),
             ('balances', self.balances),
@@ -118,7 +118,7 @@ class Transaction(TransactionHashMixin, models.Model):
         reward = cls(
             from_account=None,
             to_account=settings.WALLET_PUBLIC_KEY,
-            coins=100,
+            coins=Decimal('100.00000000'),
             time=now(),
             signature='boocoin-block-reward',
         )
@@ -145,3 +145,7 @@ class UnconfirmedTransaction(TransactionHashMixin, models.Model):
             time=self.time,
             signature=self.signature,
         )
+
+
+class SyncLock(models.Model):
+    node = models.CharField(max_length=255)

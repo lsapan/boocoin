@@ -5,13 +5,26 @@ from django.db import transaction
 from django.utils.timezone import now
 
 from boocoin.balances import apply_transactions_to_balances
-from boocoin.models import Block, Transaction, UnconfirmedTransaction
+from boocoin.models import Block, Transaction, UnconfirmedTransaction, SyncLock
 from boocoin.validation import prune_invalid_transactions, validate_block
 
 logger = logging.getLogger(__name__)
 
 
+def is_time_to_mine():
+    active_block = Block.get_active_block()
+    minutes_passed = (now() - active_block.time).total_seconds() / 60
+    if UnconfirmedTransaction.objects.count() >= 10 or minutes_passed > 10:
+        return True
+    return False
+
+
 def mine_block():
+    logger.debug('Checking for sync locks...')
+    if SyncLock.objects.count():
+        logger.debug("Looks like we're syncing, canceling mine_block call.")
+        return
+
     logger.debug('Mining new block...')
     with transaction.atomic():
         # Get the active block
