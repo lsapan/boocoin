@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.db import transaction
 from django.utils.timezone import now
@@ -6,17 +8,23 @@ from boocoin.balances import apply_transactions_to_balances
 from boocoin.models import Block, Transaction, UnconfirmedTransaction
 from boocoin.validation import prune_invalid_transactions, validate_block
 
+logger = logging.getLogger(__name__)
+
 
 def mine_block():
+    logger.debug('Mining new block...')
     with transaction.atomic():
         # Get the active block
         active_block = Block.get_active_block()
+        logger.debug(f'{active_block.id} is the active block.')
 
         # Collect the unconfirmed transactions
         unconfirmed = UnconfirmedTransaction.objects.all()
+        logger.debug(f'{len(unconfirmed)} unconfirmed transactions found.')
 
         # Prune invalid transactions
         transactions = prune_invalid_transactions(active_block, unconfirmed)
+        logger.debug(f'{len(transactions)} transactions after pruning.')
 
         # Convert the unconfirmed transactions and add the block reward
         transactions = [u.to_transaction() for u in unconfirmed]
@@ -42,5 +50,6 @@ def mine_block():
         if validate_block(block, transactions):
             # Save the block
             block.save(transactions)
+            logger.debug('Block successfully mined.')
         else:
-            print('Failed to mine block - validation error!')
+            logger.critical('Failed to mine block - validation error!')

@@ -1,3 +1,4 @@
+import logging
 import threading
 import time
 
@@ -5,6 +6,8 @@ from django.utils.timezone import now
 
 from boocoin.mining import mine_block
 from boocoin.models import Block
+
+logger = logging.getLogger(__name__)
 
 
 def start_waiting_for_blocks():
@@ -28,4 +31,5 @@ def check_for_block():
 
     # Mine a new block if it has been 10 minutes
     if minutes_passed >= 10:
+        logger.info('10 minutes passed, mining new block...')
         mine_block()

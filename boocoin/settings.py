@@ -96,6 +96,25 @@ REST_FRAMEWORK = {
 }
 
 
+# Logging
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'boocoin': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}
+
+
 # Network Nodes
 
 NODES = []
