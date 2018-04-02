@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 
 from boocoin.mining import mine_block
-from boocoin.models import Block, UnconfirmedTransaction
+from boocoin.models import Block, Transaction, UnconfirmedTransaction
 from boocoin.p2p import normalize_node, get_nodes, sync
 from boocoin.serializers import (
     BlockSerializer, UnconfirmedTransactionSerializer,

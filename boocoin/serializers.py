@@ -7,8 +7,8 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = (
-            'id', 'block', 'from_account', 'to_account', 'coins', 'extra_data',
-            'time', 'signature'
+            'hash', 'block', 'from_account', 'to_account', 'coins',
+            'extra_data', 'time', 'signature'
         )
 
 
@@ -16,8 +16,8 @@ class UnconfirmedTransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = UnconfirmedTransaction
         fields = (
-            'id', 'from_account', 'to_account', 'coins', 'extra_data', 'time',
-            'signature'
+            'hash', 'from_account', 'to_account', 'coins', 'extra_data',
+            'time', 'signature'
         )
 
 
@@ -25,8 +25,8 @@ class RemoteBlockTransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = (
-            'id', 'from_account', 'to_account', 'coins', 'extra_data', 'time',
-            'signature',
+            'hash', 'from_account', 'to_account', 'coins', 'extra_data',
+            'time', 'signature',
         )
 
 

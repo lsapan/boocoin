@@ -20,8 +20,8 @@ class BlockView(APIView):
 
 
 class TransactionView(APIView):
-    def get(self, request, id):
-        transaction = get_list_or_404(Transaction, id=id)
+    def get(self, request, hash):
+        transaction = get_list_or_404(Transaction, hash=hash)
         if len(transaction) == 1:
             return Response(TransactionSerializer(transaction[0]).data)
         else:

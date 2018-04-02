@@ -67,7 +67,7 @@ class Block(models.Model):
         self.id = self.calculate_hash()
 
     def set_merkle_root(self, transactions):
-        self.merkle_root = calculate_merkle_root(t.id for t in transactions)
+        self.merkle_root = calculate_merkle_root(t.hash for t in transactions)
 
     def sign(self):
         self.signature = sign(self.id)
@@ -97,7 +97,7 @@ class TransactionHashMixin:
 
 
 class Transaction(TransactionHashMixin, models.Model):
-    id = models.CharField(max_length=64, primary_key=True)
+    hash = models.CharField(max_length=64)
     block = models.ForeignKey(
         Block,
         related_name='transactions',
@@ -110,8 +110,12 @@ class Transaction(TransactionHashMixin, models.Model):
     time = models.DateTimeField()
     signature = models.CharField(max_length=96)
 
+    class Meta:
+        unique_together = (('hash', 'block'),)
+        ordering = ['id']
+
     def set_hash(self):
-        self.id = self.calculate_hash()
+        self.hash = self.calculate_hash()
 
     @classmethod
     def create_block_reward(cls):
@@ -127,7 +131,7 @@ class Transaction(TransactionHashMixin, models.Model):
 
 
 class UnconfirmedTransaction(TransactionHashMixin, models.Model):
-    id = models.CharField(max_length=64, primary_key=True)
+    hash = models.CharField(max_length=64, primary_key=True)
     from_account = models.CharField(max_length=96, db_index=True)
     to_account = models.CharField(max_length=96, db_index=True)
     coins = models.DecimalField(max_digits=20, decimal_places=8)
@@ -137,7 +141,7 @@ class UnconfirmedTransaction(TransactionHashMixin, models.Model):
 
     def to_transaction(self):
         return Transaction(
-            id=self.id,
+            hash=self.hash,
             from_account=self.from_account,
             to_account=self.to_account,
             coins=self.coins,

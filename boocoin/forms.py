@@ -50,8 +50,8 @@ class TransactionForm(serializers.Serializer):
             time=now(),
             extra_data=data.get('extra_data'),
         )
-        transaction.id = transaction.calculate_hash()
-        transaction.signature = sign(transaction.id, sk=data['private_key'])
+        transaction.hash = transaction.calculate_hash()
+        transaction.signature = sign(transaction.hash, sk=data['private_key'])
         data['transaction'] = transaction
 
         # Validate the transaction

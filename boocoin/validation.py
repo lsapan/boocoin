@@ -25,7 +25,7 @@ def prune_invalid_transactions(previous_block, transactions):
     for transaction in transactions:
         if not validate_transaction(balances, transaction, False):
             # Invalid transaction, delete it and move on
-            logger.debug(f'Transaction {transaction.id} invalid, pruning...')
+            logger.debug(f'Transaction {transaction.hash} invalid, pruning...')
             transaction.delete()
             continue
         else:
@@ -47,10 +47,10 @@ def binvalid(reason):
 
 
 def validate_transaction(balances, transaction, first_in_block=False):
-    logger.debug(f'Validating transaction {transaction.id}')
+    logger.debug(f'Validating transaction {transaction.hash}')
 
     # Verify the transaction hash
-    if transaction.id != transaction.calculate_hash():
+    if transaction.hash != transaction.calculate_hash():
         return tinvalid('Hash is incorrect')
 
     # Ensure the transaction isn't in the future
@@ -82,7 +82,7 @@ def validate_transaction(balances, transaction, first_in_block=False):
 
         # Verify the sender's signature
         valid_signature = verify(
-            content=transaction.id,
+            content=transaction.hash,
             public_key=transaction.from_account,
             signature=transaction.signature,
         )
@@ -149,7 +149,7 @@ def validate_block(block, transactions):
         return binvalid('Bad signature')
 
     # Verify merkle root
-    expected_merkle_root = calculate_merkle_root(t.id for t in transactions)
+    expected_merkle_root = calculate_merkle_root(t.hash for t in transactions)
     if expected_merkle_root != block.merkle_root:
         return binvalid('Bad merkle root')
 

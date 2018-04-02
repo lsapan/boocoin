@@ -6,7 +6,7 @@ urlpatterns = [
     # User APIs
     path('api/block_count/', views.BlockCountView.as_view()),
     path('api/block/<slug:id>/', views.BlockView.as_view()),
-    path('api/transaction/<slug:id>/', views.TransactionView.as_view()),
+    path('api/transaction/<slug:hash>/', views.TransactionView.as_view()),
     path('api/submit_transaction/', views.SubmitTransactionView.as_view()),
 
     # "Peer-to-peer" APIs
