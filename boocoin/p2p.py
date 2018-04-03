@@ -17,16 +17,25 @@ logger = logging.getLogger(__name__)
 
 
 def normalize_node(node):
+    """
+    Returns an acceptable URL for the given node.
+    """
     if ':' not in node:
         node = f'{node}:9811'
     return f'http://{node}'
 
 
 def get_nodes():
+    """
+    Returns a list of all the configured nodes.
+    """
     return [normalize_node(n) for n in settings.NODES]
 
 
 def broadcast_transaction(transaction):
+    """
+    Broadcasts a transaction to all of the configured nodes.
+    """
     data = UnconfirmedTransactionSerializer(transaction).data
     for node in get_nodes():
         try:
@@ -37,6 +46,9 @@ def broadcast_transaction(transaction):
 
 
 def broadcast_block(block):
+    """
+    Broadcasts a block to all of the configured nodes.
+    """
     data = {
         'block': BlockSerializer(block).data,
         'node': settings.MINER_IP,
@@ -50,11 +62,20 @@ def broadcast_block(block):
 
 
 def sync_all():
+    """
+    Syncs this node with each configured node. Note that we only sync with one
+    node at a time.
+    """
     for node in get_nodes():
         sync(node)
 
 
 def sync(node):
+    """
+    Wrapper function around _sync that creates a lock and releases it when
+    we're finished. The lock prevents us from mining new blocks before we're
+    fully up to date with the rest of the network.
+    """
     lock = SyncLock.objects.create(node=node)
 
     try:
@@ -153,6 +174,9 @@ def _sync_blocks(node, blocks):
 
 
 def get_blockchain_history(node, before=None):
+    """
+    Gets a list of block hashes from the specified node.
+    """
     endpoint = f'{node}/p2p/blockchain_history/'
     if before:
         endpoint += f'?before={before}'
@@ -161,6 +185,9 @@ def get_blockchain_history(node, before=None):
 
 
 def get_blocks(node, blocks):
+    """
+    Gets block data for the specified blocks from the target node.
+    """
     return requests.post(f'{node}/p2p/blocks/', json={
         'blocks': blocks,
     }).json()

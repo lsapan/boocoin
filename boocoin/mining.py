@@ -12,6 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 def is_time_to_mine():
+    """
+    Returns whether or not there are either at least 10 unconfirmed
+    transactions, or it has been at least 10 minutes since the last block was
+    mined.
+    """
     active_block = Block.get_active_block()
     minutes_passed = (now() - active_block.time).total_seconds() / 60
     if UnconfirmedTransaction.objects.count() >= 10 or minutes_passed > 10:

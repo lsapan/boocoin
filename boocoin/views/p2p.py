@@ -19,6 +19,10 @@ logger = logging.getLogger(__name__)
 
 
 class TransmitTransactionView(APIView):
+    """
+    Ingests unconfirmed transactions from remote nodes.
+    """
+
     @transaction.atomic
     def post(self, request):
         transaction = UnconfirmedTransactionSerializer(data=request.data)
@@ -34,6 +38,10 @@ class TransmitTransactionView(APIView):
 
 
 class TransmitBlockView(APIView):
+    """
+    Ingests blocks from remote nodes.
+    """
+
     @transaction.atomic
     def post(self, request):
         block = request.data.get('block')
@@ -90,6 +98,12 @@ class TransmitBlockView(APIView):
 
 
 class BlockchainHistoryView(APIView):
+    """
+    Returns a list of the last 100 block hashes from the most recent node (or
+    the specified node). This is used by nodes during the sync process to
+    find a common block to start downloading data from.
+    """
+
     def get(self, request):
         before = request.GET.get('before')
         if before:
@@ -109,6 +123,11 @@ class BlockchainHistoryView(APIView):
 
 
 class BlocksView(APIView):
+    """
+    Returns complete data (including transactions) for the specified block
+    hashes.
+    """
+
     def post(self, request):
         block_ids = request.data.get('blocks')
         blocks = Block.objects.filter(id__in=block_ids)

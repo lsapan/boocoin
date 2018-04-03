@@ -6,6 +6,13 @@ class InsufficientFunds(ValueError):
 
 
 def apply_transaction_to_balances(transaction, balances):
+    """
+    Accepts a dictionary of balances and applies a transaction to it.
+    Returns the new dictionary of balances.
+
+    Raises:
+        InsufficientFunds: If the account does not have enough coins.
+    """
     # Prevent modifying the passed balances object
     balances = balances.copy()
 
@@ -27,6 +34,13 @@ def apply_transaction_to_balances(transaction, balances):
 
 
 def apply_transactions_to_balances(transactions, balances):
+    """
+    Accepts a dictionary of balances and plays a list of transactions over it.
+    Returns the new dictionary of balances.
+
+    Raises:
+        InsufficientFunds: If one of the accounts does not have enough coins.
+    """
     for transaction in transactions:
         balances = apply_transaction_to_balances(transaction, balances)
     return balances
