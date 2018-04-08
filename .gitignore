@@ -52,3 +52,4 @@ db*.sqlite3
 # Boocoin
 genesis.json
 boocoin.paw
+wallet.txt

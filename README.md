@@ -83,13 +83,32 @@ POST /api/submit_transaction/
 
 This will create a transaction and send it off to the pool of unconfirmed transactions. (I've heard it's sunny there!)
 
-This API expects you to send some extra data along in either JSON or Form URL-Encoded format:
+This API expects you to send some extra data along in JSON format:
 
-- `private_key` - the private key of the wallet to send coins from
+- `hash` - the hash of the transaction
+- `from_account` - the public key of the wallet to send coins from
 - `to_account` - the public key of the wallet to send coins to
 - `coins` - the number of coins to send
+- `extra_data` - (optional) base64 encoded data to include in the transaction
+- `time` - the time associated with the transaction
+- `signature` - a signature of the `hash` signed by the private key of the `from_account`
 
-If you're sending data in form format, you can also send a fourth `extra_data` parameter which can contain arbitrary binary data.
+
+### Using the wallet
+Boocoin comes with a very simple command line wallet that allows you to store keys and send
+transactions to the blockchain. This prevents you from needing to manually call the submit_transaction API.
+
+To use the wallet, run:
+
+```
+./scripts/wallet.sh
+```
+
+You'll have the option to:
+- Add (or generate) a new keypair
+- List your existing keys
+- Send coins (create a transaction)
+
 
 ### Peer-to-peer APIs
 There are other API endpoints that are used by the miners to communicate with eachother and send blocks/transactions around. I won't write about them here, but just know they exist if you really want them.
